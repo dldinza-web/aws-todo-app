@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: serverless-node-ts
+service: aws-todo-app
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
@@ -33,13 +33,19 @@ provider:
   region: us-east-1
 
 # you can add statements to the Lambda function's IAM Role here
-#  iam:
-#    role:
-#      statements:
-#        - Effect: "Allow"
-#          Action:
-#            - "s3:ListBucket"
-#          Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+  iam:
+   role:
+     statements:
+      - Effect: "Allow"
+        Action:
+          - dynamodb:DescribeTable
+          - dynamodb:Query
+          - dynamodb:Scan
+          - dynamodb:GetItem
+          - dynamodb:PutItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+        Resource: "arn:aws:dynamodb:us-east-1:*:table/todos"
 #        - Effect: "Allow"
 #          Action:
 #            - "s3:PutObject"
@@ -70,15 +76,27 @@ plugins:
   - serverless-plugin-optimize
 
 functions:
-  hello:
-    handler: handler.hello
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
+  create:
+    handler: src/todos/create-todo.handler
     events:
       - httpApi:
-          path: /hello
+          path: /todos/create
+          method: post
+  all:
+    handler: src/todos/all-todos.handler
+    events:
+      - httpApi:
+          path: /todos
           method: get
+#   hello:
+#     handler: handler.hello
+# #    The following are a few example events you can configure
+# #    NOTE: Please make sure to change your handler code to work with those events
+# #    Check the event documentation for details
+#     events:
+#       - httpApi:
+#           path: /hello
+#           method: get
 #      - websocket: $connect
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
@@ -113,12 +131,24 @@ functions:
 #      variable2: value2
 
 # you can add CloudFormation resource templates here
-#resources:
-#  Resources:
-#    NewResource:
-#      Type: AWS::S3::Bucket
-#      Properties:
-#        BucketName: my-new-bucket
+# resources:
+#   Resources:
+#     TodosDynamoDbTable:
+#       Type: 'AWS::DynamoDB::Table'
+#       DeletionPolicy: Retain
+#       Properties:
+#         AttributeDefinitions:
+#           -
+#             AttributeName: id
+#             AttributeType: S
+#         KeySchema:
+#           -
+#             AttributeName: id
+#             KeyType: HASH
+#         ProvisionedThroughput:
+#           ReadCapacityUnits: 1
+#           WriteCapacityUnits: 1
+#         TableName: 'todos'
 #  Outputs:
 #     NewOutput:
 #       Description: "Description for the output"
