@@ -76,25 +76,48 @@ plugins:
   - serverless-plugin-optimize
 
 functions:
+  delete:
+    handler: src/todos/remove-todo.handler
+    events:
+      - http:
+          path: /todos/{id}
+          method: delete
+          cors: true
+  update:
+    handler: src/todos/update-todo.handler
+    events:
+      - http:
+          path: /todos/{id}
+          method: put
+          cors: true
+  loadTodo:
+    handler: src/todos/load-todo.handler
+    events:
+      - http:
+          path: /todos/{id}
+          method: get
+          cors: true
   create:
     handler: src/todos/create-todo.handler
     events:
-      - httpApi:
+      - http:
           path: /todos/create
           method: post
+          cors: true
   all:
     handler: src/todos/all-todos.handler
     events:
-      - httpApi:
+      - http:
           path: /todos
           method: get
+          cors: true
 #   hello:
 #     handler: handler.hello
 # #    The following are a few example events you can configure
 # #    NOTE: Please make sure to change your handler code to work with those events
 # #    Check the event documentation for details
 #     events:
-#       - httpApi:
+#       - http:
 #           path: /hello
 #           method: get
 #      - websocket: $connect

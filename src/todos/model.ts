@@ -6,7 +6,8 @@ export interface Response {
 export enum ItemStatusEnum {
     open = 'open',
     in_progress = 'in progress',
-    done = 'done'
+    done = 'done',
+    deleted = 'deleted'
 }
 
 export interface TodoItem {
